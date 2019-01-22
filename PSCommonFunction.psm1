@@ -47,25 +47,16 @@ function Get-CFPSGalleryModule
 
 <#
 .SYNOPSIS
-Script snippet.
+Installs or updates required modules.
 
 .DESCRIPTION
-Script description.
+Installs or updates the required PowerShell modules for the calling script
 
-.PARAMETER ModulesToInstall
-Parameter1 description.
-
-.EXAMPLE
-.\New-Script example 1
+.PARAMETER ModuleToInstall
+The required list of modules to install.
 
 .EXAMPLE
-.\New-Script example 2
-
-.INPUTS
-Script inputs.
-
-.OUTPUTS
-Script outputs
+Get-CFPSGalleryModule -ModuleToInstall <module1>,<module2>,<module3>
 
 .NOTES
 The MIT License (MIT)
@@ -114,22 +105,16 @@ function New-CFLogFiles
 
 <#
 .SYNOPSIS
-Script snippet.
+Create log files
 
 .DESCRIPTION
-Script description.
+Creates a transcript and a custom log file to record script activity.
 
 .EXAMPLE
-.\New-Script example 1
-
-.EXAMPLE
-.\New-Script example 2
-
-.INPUTS
-Script inputs.
-
-.OUTPUTS
-Script outputs
+New-CFLogFiles
+The log file prefix will be the name of the calling script and a time-stamp will be used in the log and transcript file names with the following formats:
+Custom log file: <ScriptName>-LOG-<localhost>-<time-stamp>.log
+Transcript file: <ScriptName>-TRANSCRIPT-<localhost>-<time-stamp>.log
 
 .NOTES
 The MIT License (MIT)
@@ -148,7 +133,7 @@ Copyright (c) 2018 Preston K. Parsard
 	$Log = Join-Path -Path $LogDirectory -ChildPath $LogFile
 
 	# Construct transcript file full path
-	$TranscriptFile = "$LogPrefix-TRANSCRIPT" + "-" + $TimeStamp + ".log"
+	$TranscriptFile = "$LogPrefix-TRANSCRIPT" + "-" + $env:computername + $TimeStamp + ".log"
 	$Transcript = Join-Path -Path $LogDirectory -ChildPath $TranscriptFile
 
 	# Create log and transcript files
@@ -160,22 +145,17 @@ function New-CFHeader
 
 <#
 .SYNOPSIS
-Script snippet.
+Creates a new header.
 
 .DESCRIPTION
-Script description.
+Creates a new header with the format:
+=====================================
+<Header title> <time-stamp>
+=====================================
 
 .EXAMPLE
-.\New-Script example 1
-
-.EXAMPLE
-.\New-Script example 2
-
-.INPUTS
-Script inputs.
-
-.OUTPUTS
-Script outputs
+New-CFHeader -label <Header title> -charCount ##
+In this example, the label parameter is used to for the header title, and the -charCount parameter indicates the number of "=" that will be created for the double line separator
 
 .NOTES
 The MIT License (MIT)
@@ -204,22 +184,14 @@ function Install-CFAdModuleIfRequired
 {
 <#
 .SYNOPSIS
-Script snippet.
+Install the ActiveDirectory module feature if required
 
 .DESCRIPTION
-Script description.
+This function will install the ActiveDirectory PowerShell feature so that PowerShell cmdlets can be used for the remainder of the script.
+It will test if the module is already installed, and if not, will install it.
 
 .EXAMPLE
-.\New-Script example 1
-
-.EXAMPLE
-.\New-Script example 2
-
-.INPUTS
-Script inputs.
-
-.OUTPUTS
-Script outputs
+Install-CFAdModuleIfRequired
 
 .NOTES
 The MIT License (MIT)
@@ -235,4 +207,3 @@ Copyright (c) 2018 Preston K. Parsard
 #endregion FUNCTIONs
 
 Export-ModuleMember -Function *-CF*
-

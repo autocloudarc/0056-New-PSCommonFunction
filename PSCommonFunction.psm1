@@ -42,17 +42,36 @@ that arise or result from the use or distribution of the Sample Code.
 
 #region FUNCTIONS
 
-function Get-CFInputFile
-{
-} # end function
-
-function Get-CFLogPath
-{
-
-} # end function
-
 function Get-CFPSGalleryModule
 {
+
+<#
+.SYNOPSIS
+Script snippet.
+
+.DESCRIPTION
+Script description.
+
+.PARAMETER ModulesToInstall
+Parameter1 description.
+
+.EXAMPLE
+.\New-Script example 1
+
+.EXAMPLE
+.\New-Script example 2
+
+.INPUTS
+Script inputs.
+
+.OUTPUTS
+Script outputs
+
+.NOTES
+The MIT License (MIT)
+Copyright (c) 2018 Preston K. Parsard
+
+#>
 	[CmdletBinding(PositionalBinding = $false)]
 	Param
 	(
@@ -92,30 +111,45 @@ function Get-CFPSGalleryModule
 
 function New-CFLogFiles
 {
-	[CmdletBinding()]
-	[OutputType([string[]])]
-	param (
-		[Parameter(Mandatory=$true)]
-		[ValidateNotNullOrEmpty()]
-		[string]$LogDirectory,
 
-		[Parameter(Mandatory=$true)]
-		[ValidateNotNullOrEmpty()]
-		[string]$LogPrefix
-	) # end param
+<#
+.SYNOPSIS
+Script snippet.
 
-	# Get curent date and time
+.DESCRIPTION
+Script description.
+
+.EXAMPLE
+.\New-Script example 1
+
+.EXAMPLE
+.\New-Script example 2
+
+.INPUTS
+Script inputs.
+
+.OUTPUTS
+Script outputs
+
+.NOTES
+The MIT License (MIT)
+Copyright (c) 2018 Preston K. Parsard
+#>
+
+# Get curent date and time
 	$TimeStamp = (get-date -format u).Substring(0,16)
 	$TimeStamp = $TimeStamp.Replace(" ", "-")
 	$TimeStamp = $TimeStamp.Replace(":", "")
 
+	$LogPrefix = ($MyInvocation.PSCommandPath | Split-Path -Leaf).Split(".")[0]
+	$LogDirectory = Join-Path $env:USERPROFILE -ChildPath $LogPrefix
 	# Construct log file full path
 	$LogFile = "$LogPrefix-LOG" + "-" + $env:computername + "-" + $TimeStamp + ".log"
-	$script:Log = Join-Path -Path $LogDirectory -ChildPath $LogFile
+	$Log = Join-Path -Path $LogDirectory -ChildPath $LogFile
 
 	# Construct transcript file full path
 	$TranscriptFile = "$LogPrefix-TRANSCRIPT" + "-" + $TimeStamp + ".log"
-	$script:Transcript = Join-Path -Path $LogDirectory -ChildPath $TranscriptFile
+	$Transcript = Join-Path -Path $LogDirectory -ChildPath $TranscriptFile
 
 	# Create log and transcript files
 	New-Item -Path $Log, $Transcript -ItemType File -ErrorAction SilentlyContinue
@@ -123,6 +157,30 @@ function New-CFLogFiles
 
 function New-CFHeader
 {
+
+<#
+.SYNOPSIS
+Script snippet.
+
+.DESCRIPTION
+Script description.
+
+.EXAMPLE
+.\New-Script example 1
+
+.EXAMPLE
+.\New-Script example 2
+
+.INPUTS
+Script inputs.
+
+.OUTPUTS
+Script outputs
+
+.NOTES
+The MIT License (MIT)
+Copyright (c) 201 Preston K. Parsard
+#>
 	[CmdletBinding()]
 	[OutputType([hashtable])]
 	param (
@@ -142,54 +200,31 @@ function New-CFHeader
 
 } # end function
 
-function Show-CFHeader
-{
-	# Display header
-	Write-ToConsoleAndLog -Output $header.SeparatorDouble -Log $Log
-	Write-ToConsoleAndLog -Output $Header.Title -Log $Log
-	Write-ToConsoleAndLog -Output $header.SeparatorSingle -Log $Log
-} # end function
-
-function New-CFPromptObjects
-{
-	# Create prompt and response objects
-	[CmdletBinding()]
-	param (
-	[AllowNull()]
-	[AllowEmptyCollection()]
-	[PScustomObject]$PromptsObj,
-
-	[AllowNull()]
-	[AllowEmptyCollection()]
-	[PScustomObject]$ResponsesObj
-	) # end param
-
-	# Create and populate prompts object with property-value pairs
-	# PROMPTS (PromptsObj)
-	$PromptsObj = [PSCustomObject]@{
-		 pVerifySummary = "Is this information correct? [YES/NO]"
-		 pAskToOpenLogs = "Would you like to open the custom and transcript logs now ? [YES/NO]"
-	} #end $PromptsObj
-
-	# Create and populate responses object with property-value pairs
-	# RESPONSES (ResponsesObj): Initialize all response variables with null value
-	$ResponsesObj = [PSCustomObject]@{
-		 pProceed = $null
-		 pOpenLogsNow = $null
-	} #end $ResponsesObj
-} # end function
-
-function Show-CFPromptToContinue
-{
-	Do {
-		$ResponsesObj.pProceed = read-host $PromptsObj.pVerifySummary
-		$ResponsesObj.pProceed = $ResponsesObj.pProceed.ToUpper()
-	} # end do
-	Until ($ResponsesObj.pProceed -eq "Y" -OR $ResponsesObj.pProceed -eq "YES" -OR $ResponsesObj.pProceed -eq "N" -OR $ResponsesObj.pProceed -eq "NO")
-} # end function
-
 function Install-CFAdModuleIfRequired
 {
+<#
+.SYNOPSIS
+Script snippet.
+
+.DESCRIPTION
+Script description.
+
+.EXAMPLE
+.\New-Script example 1
+
+.EXAMPLE
+.\New-Script example 2
+
+.INPUTS
+Script inputs.
+
+.OUTPUTS
+Script outputs
+
+.NOTES
+The MIT License (MIT)
+Copyright (c) 2018 Preston K. Parsard
+#>
 	# Add the RSAT-AD-PowerShell feature so that the ActiveDirectory modules can be used in the remainder of the script.
 	if (-not((Get-WindowsFeature -Name "RSAT-AD-PowerShell").InstallState))
 	{
@@ -199,130 +234,5 @@ function Install-CFAdModuleIfRequired
 
 #endregion FUNCTIONs
 
-#region INITIALIZE VALUES
+Export-ModuleMember -Function *-CF*
 
-# function: Get any PowerShellGallery.com modules required for this script.
-Get-PSGalleryModule -ModulesToInstall "WriteToLogs"
-
-# Create Log file
-[string]$Log = $null
-[string]$Transcript = $null
-
-$scriptName = $MyInvocation.MyCommand.name
-# Use script filename without exension as a log prefix
-$LogPrefix = $scriptName.Split(".")[0]
-
-# funciton: Create log files for custom logging and transcript
-New-LogFiles -LogDirectory $LogDirectory -LogPrefix $LogPrefix
-
-Start-Transcript -Path $Transcript -IncludeInvocationHeader
-
-# Create prompt and response objects for continuing script and opening logs.
-$PromptsObj = $null
-$ResponsesObj = $null
-
-# function: Create prompt and response objects
-New-PromptObjects -PromptsObj $PromptsObj -ResponsesObj $ResponsesObj
-
-$BeginTimer = Get-Date -Verbose
-
-Install-AdModuleIfRequired
-
-# Initialize index
-$i = 0
-
-# Populate summary display object
-# Add properties and values
- $SummObj = [PSCustomObject]@{
-     Log = $Log
-     Transcript = $Transcript
- } #end $SummObj
-
- # funciton: Create new header
- $label = "<HEADER TITLE>"
- New-Header -label $label
-
- # function: Create prompt and responses objects ($PromptsObj, ResponsesObj)
- New-PromptObjects
-
- #endregion INITIALIZE VALUES
-
-#region MAIN
-
-
-# Display Summary of initial parameters and constructed values
-Write-ToConsoleAndLog -Output $SummObj -Log $Log
-Write-ToConsoleAndLog -Output $header.SeparatorDouble -Log $Log
-
-
-
-# Record prompt and response in log
-Write-ToLogOnly -Output $PromptsObj.pVerifySummary -Log $Log
-Write-ToLogOnly -Output $ResponsesObj.pProceed -Log $Log
-
-# Exit if user does not want to continue
-if ($ResponsesObj.pProceed -eq "N" -OR $ResponsesObj.pProceed -eq "NO")
-{
-	Write-ToConsoleAndLog -Output "Script terminated by user..." -Log $Log
-	PAUSE
-	EXIT
-} #end if ne Y
-else
-{
-
-} # end else
-#endregion MAIN
-
-#region SUMMARY
-
-# Calculate statistics
-$score = [PScustomObject]@{
-} # end count objects
-
-# Display count statistics
-$countObj | Format-Table -AutoSize | Tee-Object -FilePath $log -Append
-# Display score
-$score | Format-Table -AutoSize | Tee-Object -FilePath $log -Append
-
-# Calculate elapsed time
-Write-WithTime -Output "Calculating script execution time..." -Log $Log
-Write-WithTime -Output "Getting current date/time..." -Log $Log
-$StopTimer = Get-Date
-$EndTime = (((Get-Date -format u).Substring(0,16)).Replace(" ", "-")).Replace(":","")
-Write-WithTime -Output "Calculating elapsed time..." -Log $Log
-$ExecutionTime = New-TimeSpan -Start $BeginTimer -End $StopTimer
-
-$Footer = "SCRIPT COMPLETED AT: "
-$EndOfScriptMessage = "End of script!"
-
-Write-ToConsoleAndLog -Output $header.SeparatorDouble -Log $Log
-Write-ToConsoleAndLog -Output "$Footer $EndTime" -Log $Log
-Write-ToConsoleAndLog -Output "TOTAL SCRIPT EXECUTION TIME[hh:mm:ss]: $ExecutionTime" -Log $Log
-Write-ToConsoleAndLog -Output $header.SeparatorDouble -Log $Log
-
-# Review deployment logs
-# Prompt to open logs
-Do
-{
- $ResponsesObj.pOpenLogsNow = read-host $PromptsObj.pAskToOpenLogs
- $ResponsesObj.pOpenLogsNow = $ResponsesObj.pOpenLogsNow.ToUpper()
-}
-Until ($ResponsesObj.pOpenLogsNow -eq "Y" -OR $ResponsesObj.pOpenLogsNow -eq "YES" -OR $ResponsesObj.pOpenLogsNow -eq "N" -OR $ResponsesObj.pOpenLogsNow -eq "NO")
-
-# Exit if user does not want to continue
-If ($ResponsesObj.pOpenLogsNow -in 'Y','YES')
-{
-    Start-Process -FilePath notepad.exe $Log -Verbose
-    Start-Process -FilePath notepad.exe $Transcript -Verbose
-	# Invoke-Item -Path $resultsPathCsv -Verbose
-    Write-WithTime -Output $EndOfScriptMessage -Log $Log
-} #end condition
-ElseIf ($ResponsesObj.pOpenLogsNow -in 'N','NO')
-{
-    Write-WithTime -Output $EndOfScriptMessage -Log $Log
-    Stop-Transcript -Verbose -ErrorAction SilentlyContinue
-} #end condition
-
-#endregion SUMMARY
-
-Stop-Transcript -ErrorAction SilentlyContinue -Verbose

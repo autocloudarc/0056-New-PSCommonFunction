@@ -1,95 +1,57 @@
-#Requires -PSEdition Desktop
-#Requires -Version 5.1
-#Requires -RunAsAdministrator
-
-# using namespace System.Net
+# PSCommonFunciton module FUNCTIONS
 <#
-.SYNOPSIS
-Script snippet.
+****************************************************************************************************************************************************************************
+PROGRAM:
+PSCommonFunction.psm1
 
-.DESCRIPTION
-Script description.
+DESCRIPTION:
+A module with a set of commonly used functions to get PowerShellGallery modules, create log files, add headers, footers, prompts and calculate elapsed time for a script.
 
-.PARAMETER Parameter1
-Parameter1 description.
+KEYWORDS:
+Write, Logs, Header, Footer, Time, Formatting
 
-.PARAMETER Parameter2
-Parameter2 description.
-
-.EXAMPLE
-.\New-Script example 1
-
-.EXAMPLE
-.\New-Script example 2
-
-.INPUTS
-Script inputs.
-
-.OUTPUTS
-Script outputs
-
-.NOTES
+LICENSE:
 The MIT License (MIT)
-Copyright (c) 2018 Preston K. Parsard
+Copyright (c) 2019 Preston K. Parsard
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-LEGAL DISCLAIMER:
-This Sample Code is provided for the purpose of illustration only and is not intended to be used in a production environment. 
+DISCLAIMER:
 THIS SAMPLE CODE AND ANY RELATED INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
-INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE. 
-We grant You a nonexclusive, royalty-free right to use and modify the Sample Code and to reproduce and distribute the object code form of the Sample Code, provided that You agree:
-(i) to not use Our name, logo, or trademarks to market Your software product in which the Sample Code is embedded;
-(ii) to include a valid copyright notice on Your software product in which the Sample Code is embedded; and
-(iii) to indemnify, hold harmless, and defend Us and Our suppliers from and against any claims or lawsuits, including attorneys' fees, that arise or result from the use or distribution of the Sample Code.
-This posting is provided "AS IS" with no warranties, and confers no rights.
-
-.LINK
-Title1: link1
-Title2: link2
-
-.COMPONENT
-Component1, Component2
-
-.ROLE
-Role1
-Role2
-
-.FUNCTIONALITY
-Main feature of script.
+INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.  We grant You a nonexclusive,
+royalty-free right to use and modify the Sample Code and to reproduce and distribute the Sample Code, provided that You agree: (i) to not use Our name,
+logo, or trademarks to market Your software product in which the Sample Code is embedded;
+(ii) to include a valid copyright notice on Your software product in which the Sample Code is embedded; and (iii) to indemnify, hold harmless,
+and defend Us and Our suppliers from and against any claims or lawsuits, including attorneys’ fees,
+that arise or result from the use or distribution of the Sample Code.
+****************************************************************************************************************************************************************************
 #>
 
 <#
-	TASK-ITEM: 00.00.0001 Notes
+	Release notes
+	TASK-ITEM: 0.0.0 Notes
 #>
-
-[CmdletBinding()]
-param (
-        # Full path to input file for list of servers to process. <Set Mandatory=$true after testing>
-		# i.e. "\\server\share\ServerList.txt"
-        [Parameter(Mandatory=$true,
-		HelpMessage = "Enter the input text file with the server names in FQDN format",
-		ValueFromPipeline=$true)]
-        [ValidateNotNullOrEmpty()]
-		[string]$InputFilePath,
-
-		# Log directory
-		# i.e. "\\server\share\logs"
-        [Parameter(Mandatory=$false)]
-        [ValidateNotNullOrEmpty()]
-        [string]$LogDirectory
-) #end param
-
-#region INITIALIZE ENVIRONMENT
-Set-StrictMode -Version Latest
-#endregion INITIALIZE ENVIRONMENT
 
 #region FUNCTIONS
-function Get-PSGalleryModule
+
+function Get-CFInputFile
+{
+} # end function
+
+function Get-CFLogPath
+{
+
+} # end function
+
+function Get-CFPSGalleryModule
 {
 	[CmdletBinding(PositionalBinding = $false)]
 	Param
@@ -128,7 +90,7 @@ function Get-PSGalleryModule
 	} #end foreach
 } #end function
 
-function New-LogFiles
+function New-CFLogFiles
 {
 	[CmdletBinding()]
 	[OutputType([string[]])]
@@ -159,7 +121,7 @@ function New-LogFiles
 	New-Item -Path $Log, $Transcript -ItemType File -ErrorAction SilentlyContinue
 } # end function
 
-function script:New-Header
+function New-CFHeader
 {
 	[CmdletBinding()]
 	[OutputType([hashtable])]
@@ -170,7 +132,7 @@ function script:New-Header
 		[int]$charCount
 	) # end param
 
-	$script:header = @{
+	$header = @{
 		# Draw double line
 		SeparatorDouble = ("=" * $charCount)
 		Title = ("$label :" + " $(Get-Date)")
@@ -180,7 +142,15 @@ function script:New-Header
 
 } # end function
 
-function New-PromptObjects
+function Show-CFHeader
+{
+	# Display header
+	Write-ToConsoleAndLog -Output $header.SeparatorDouble -Log $Log
+	Write-ToConsoleAndLog -Output $Header.Title -Log $Log
+	Write-ToConsoleAndLog -Output $header.SeparatorSingle -Log $Log
+} # end function
+
+function New-CFPromptObjects
 {
 	# Create prompt and response objects
 	[CmdletBinding()]
@@ -196,20 +166,29 @@ function New-PromptObjects
 
 	# Create and populate prompts object with property-value pairs
 	# PROMPTS (PromptsObj)
-	$script:PromptsObj = [PSCustomObject]@{
+	$PromptsObj = [PSCustomObject]@{
 		 pVerifySummary = "Is this information correct? [YES/NO]"
 		 pAskToOpenLogs = "Would you like to open the custom and transcript logs now ? [YES/NO]"
 	} #end $PromptsObj
 
 	# Create and populate responses object with property-value pairs
 	# RESPONSES (ResponsesObj): Initialize all response variables with null value
-	$script:ResponsesObj = [PSCustomObject]@{
+	$ResponsesObj = [PSCustomObject]@{
 		 pProceed = $null
 		 pOpenLogsNow = $null
 	} #end $ResponsesObj
 } # end function
 
-function Install-AdModuleIfRequired
+function Show-CFPromptToContinue
+{
+	Do {
+		$ResponsesObj.pProceed = read-host $PromptsObj.pVerifySummary
+		$ResponsesObj.pProceed = $ResponsesObj.pProceed.ToUpper()
+	} # end do
+	Until ($ResponsesObj.pProceed -eq "Y" -OR $ResponsesObj.pProceed -eq "YES" -OR $ResponsesObj.pProceed -eq "N" -OR $ResponsesObj.pProceed -eq "NO")
+} # end function
+
+function Install-CFAdModuleIfRequired
 {
 	# Add the RSAT-AD-PowerShell feature so that the ActiveDirectory modules can be used in the remainder of the script.
 	if (-not((Get-WindowsFeature -Name "RSAT-AD-PowerShell").InstallState))
@@ -249,34 +228,8 @@ $BeginTimer = Get-Date -Verbose
 
 Install-AdModuleIfRequired
 
-# Create PSClass class to track status of changes during processing
-
-class PSClass
-{
-	[string]$server = $null
-	[boolean]$connection = $null
-	[boolean]$remoting = $null
-	[string[]]$dnsPrevious = $null
-	[string[]]$dnsUpdated = $null
-	[string[]]$dnsList = $null
-} # end class
-
 # Initialize index
 $i = 0
-# Initialize list of status objects
-$statusList = @()
-
-# Create count class to track statistics
-class count
-{
-	[int]$computers = $servers.count
-	[int]$changed = 0
-	[int]$connected = 0
-	[int]$remotable = 0
-} # end class
-
-# Create a count object from the count class to track all the counters used in this script.
-$countObj = [count]::new()
 
 # Populate summary display object
 # Add properties and values
@@ -295,20 +248,13 @@ $countObj = [count]::new()
  #endregion INITIALIZE VALUES
 
 #region MAIN
-# Display header
-Write-ToConsoleAndLog -Output $header.SeparatorDouble -Log $Log
-Write-ToConsoleAndLog -Output $Header.Title -Log $Log
-Write-ToConsoleAndLog -Output $header.SeparatorSingle -Log $Log
+
 
 # Display Summary of initial parameters and constructed values
 Write-ToConsoleAndLog -Output $SummObj -Log $Log
 Write-ToConsoleAndLog -Output $header.SeparatorDouble -Log $Log
 
-Do {
-	$ResponsesObj.pProceed = read-host $PromptsObj.pVerifySummary
-	$ResponsesObj.pProceed = $ResponsesObj.pProceed.ToUpper()
-} # end do
-Until ($ResponsesObj.pProceed -eq "Y" -OR $ResponsesObj.pProceed -eq "YES" -OR $ResponsesObj.pProceed -eq "N" -OR $ResponsesObj.pProceed -eq "NO")
+
 
 # Record prompt and response in log
 Write-ToLogOnly -Output $PromptsObj.pVerifySummary -Log $Log

@@ -120,6 +120,7 @@ Copyright (c) 2018 Preston K. Parsard
 	$TimeStamp = $TimeStamp.Replace(":", "")
 
 	$LogPrefix = "PSCommonFunction"
+	New-Item -Path $env:USERPROFILE\$LogPrefix -ItemType Directory -Verbose
 	$LogDirectory = Join-Path $env:USERPROFILE -ChildPath $LogPrefix
 	# Construct log file full path
 	$LogFile = "$LogPrefix-LOG" + "-" + $env:computername + "-" + $TimeStamp + ".log"

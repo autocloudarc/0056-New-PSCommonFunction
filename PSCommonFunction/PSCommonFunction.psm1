@@ -35,25 +35,7 @@ that arise or result from the use or distribution of the Sample Code.
 ****************************************************************************************************************************************************************************
 #>
 
-<#
-	Release notes
-	TASK-ITEM: 0.0.0 Notes
-
-    PS C:\WINDOWS\system32> Get-CFPSGalleryModule -ModulesToInstall WriteToLogs
-
-    Name                           Version          Source           Summary
-    ----                           -------          ------           -------
-    nuget                          2.8.5.208        https://onege... NuGet provider for the OneGet meta-package manager
-    Get-Module : A parameter cannot be found that matches parameter name 'Repository'.
-    At C:\Program Files\WindowsPowerShell\Modules\PSCommonFunction\0.1.0\PSCommonFunction.psm1:87 char:38
-    +         If (Get-Module -Name $Module -Repository $Repository)
-    +                                      ~~~~~~~~~~~
-    + CategoryInfo          : InvalidArgument: (:) [Get-Module], ParameterBindingException
-    + FullyQualifiedErrorId : NamedParameterNotFound,Microsoft.PowerShell.Commands.GetModuleCommand
-#>
-
 #region FUNCTIONS
-
 function Get-CFPSGalleryModule
 {
 <#
@@ -148,7 +130,7 @@ Copyright (c) 2018 Preston K. Parsard
 	$Transcript = Join-Path -Path $LogDirectory -ChildPath $TranscriptFile
 
 	# Create log and transcript files
-	New-Item -Path $Log, $Transcript -ItemType File -ErrorAction SilentlyContinue
+	New-Item -Path $Log, $Transcript -ItemType File -ErrorAction SilentlyContinue -Verbose
 } # end function
 
 function New-CFHeader
@@ -190,7 +172,10 @@ Copyright (c) 201 Preston K. Parsard
 	} # end hashtable
 
 	# Show header
-	$header
+	$header.SeparatorDouble
+	$header.Title
+	$header.SeparatorDouble
+	$header.SeparatorSingle
 
 } # end function
 

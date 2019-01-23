@@ -96,17 +96,17 @@ Copyright (c) 2018 Preston K. Parsard
 	foreach ($Module in $ModulesToInstall)
 	{
         # If module exists, update it
-        If (Get-Module -Name $Module -Repository $Repository)
+        If (Get-Module -Name $Module)
         {
         # To avoid multiple versions of a module is installed on the same system, first uninstall any previously installed and loaded versions if they exist
-            Update-Module -Name $Module -Repository $Repository -Force -ErrorAction SilentlyContinue -Verbose
+            Update-Module -Name $Module -Force -ErrorAction SilentlyContinue -Verbose
         } #end if
 		# If the modules aren't already loaded, install and import it
 		else
 		{
 			# https://www.powershellgallery.com/packages/WriteToLogs
 			Install-Module -Name $Module -Repository $Repository -Force -Verbose
-			Import-Module -Name $Module -Repository $Repository -Verbose
+			Import-Module -Name $Module -Verbose
 		} #end If
 	} #end foreach
 } #end function
@@ -188,6 +188,9 @@ Copyright (c) 201 Preston K. Parsard
 		# Draw single line
 		SeparatorSingle = ("-" * $charCount)
 	} # end hashtable
+
+	# Show header
+	$header
 
 } # end function
 

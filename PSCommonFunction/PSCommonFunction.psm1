@@ -119,8 +119,10 @@ Copyright (c) 2018 Preston K. Parsard
 	$TimeStamp = $TimeStamp.Replace(" ", "-")
 	$TimeStamp = $TimeStamp.Replace(":", "")
 
+	# The $LogPrefix represents the subfolder under $env:USERPROFILE where the log files will be stored.
 	$LogPrefix = "PSCommonFunction"
-	New-Item -Path $env:USERPROFILE\$LogPrefix -ItemType Directory -Verbose
+	# Suppress error if the folder already exists
+	New-Item -Path $env:USERPROFILE\$LogPrefix -ItemType Directory -ErrorAction SilentlyContinue -Verbose
 	$LogDirectory = Join-Path $env:USERPROFILE -ChildPath $LogPrefix
 	# Construct log file full path
 	$LogFile = "$LogPrefix-LOG" + "-" + $env:computername + "-" + $TimeStamp + ".log"

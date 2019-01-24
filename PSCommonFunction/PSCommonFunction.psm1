@@ -92,50 +92,6 @@ Copyright (c) 2018 Preston K. Parsard
 		} #end If
 	} #end foreach
 } #end function
-
-function New-CFLogFiles
-{
-
-<#
-.SYNOPSIS
-Create log files
-
-.DESCRIPTION
-Creates a transcript and a custom log file to record script activity.
-
-.EXAMPLE
-New-CFLogFiles
-The log file prefix will be the name of the calling script and a time-stamp will be used in the log and transcript file names with the following formats:
-Custom log file: <ScriptName>-LOG-<localhost>-<time-stamp>.log
-Transcript file: <ScriptName>-TRANSCRIPT-<localhost>-<time-stamp>.log
-
-.NOTES
-The MIT License (MIT)
-Copyright (c) 2018 Preston K. Parsard
-#>
-
-# Get curent date and time
-	$TimeStamp = (get-date -format u).Substring(0,16)
-	$TimeStamp = $TimeStamp.Replace(" ", "-")
-	$TimeStamp = $TimeStamp.Replace(":", "")
-
-	# The $LogPrefix represents the subfolder under $env:USERPROFILE where the log files will be stored.
-	$LogPrefix = "PSCommonFunction"
-	# Suppress error if the folder already exists
-	New-Item -Path $env:USERPROFILE\$LogPrefix -ItemType Directory -ErrorAction SilentlyContinue -Verbose
-	$LogDirectory = Join-Path $env:USERPROFILE -ChildPath $LogPrefix
-	# Construct log file full path
-	$LogFile = "$LogPrefix-LOG" + "-" + $env:computername + "-" + $TimeStamp + ".log"
-	$Log = Join-Path -Path $LogDirectory -ChildPath $LogFile
-
-	# Construct transcript file full path
-	$TranscriptFile = "$LogPrefix-TRANSCRIPT" + "-" + $env:computername + $TimeStamp + ".log"
-	$Transcript = Join-Path -Path $LogDirectory -ChildPath $TranscriptFile
-
-	# Create log and transcript files
-	New-Item -Path $Log, $Transcript -ItemType File -ErrorAction SilentlyContinue -Verbose
-} # end function
-
 function New-CFHeader
 {
 
@@ -208,4 +164,4 @@ Copyright (c) 2018 Preston K. Parsard
 
 #endregion FUNCTIONs
 
-Export-ModuleMember -Function *-CF*
+Export-ModuleMember -Function * -Variable *
